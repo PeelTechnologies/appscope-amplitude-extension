@@ -18,6 +18,7 @@ package com.peel.appscope.amplitude;
 import org.json.JSONObject;
 
 import com.amplitude.api.Amplitude;
+import com.amplitude.api.AmplitudeClient;
 import com.peel.appscope.AppScope;
 import com.peel.appscope.TypedKey;
 
@@ -28,13 +29,23 @@ import com.peel.appscope.TypedKey;
  * @author Inderjeet Singh
  */
 public final class AppScopeAmplitudeSyncListener implements AppScope.EventListener {
+    private final AmplitudeClient amplitudeClient;
+
+    public AppScopeAmplitudeSyncListener() {
+        this(Amplitude.getInstance());
+    }
+
+    public AppScopeAmplitudeSyncListener(AmplitudeClient client) {
+        this.amplitudeClient = client;
+    }
+
     @Override
     public <T> void onBind(TypedKey<T> key, T value) {
         if (key instanceof TypedKeyAmplitudeSynced) {
             try {
                 JSONObject props = new JSONObject();
                 props.put(key.getName(), value);
-                Amplitude.getInstance().setUserProperties(props);
+                amplitudeClient.setUserProperties(props);
             } catch (Exception ignored) {
             }
         }
@@ -47,7 +58,7 @@ public final class AppScopeAmplitudeSyncListener implements AppScope.EventListen
                 // Only for boolean keys, set them to false in Amplitude
                 JSONObject props = new JSONObject();
                 props.put(key.getName(), false);
-                Amplitude.getInstance().setUserProperties(props);
+                amplitudeClient.setUserProperties(props);
             }
         } catch (Exception ignored) {
         }

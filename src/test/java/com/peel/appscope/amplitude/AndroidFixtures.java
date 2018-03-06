@@ -25,7 +25,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Class that provides mocks for various Android library classes
+ * Utility class that provides mocks for various Android library classes
  *
  * @author Inderjeet Singh
  */

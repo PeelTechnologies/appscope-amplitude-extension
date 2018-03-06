@@ -38,12 +38,18 @@
 		<dependency>
 			<groupId>com.github.PeelTechnologies</groupId>
 			<artifactId>appscope</artifactId>
-			<version>1.7.1</version>
+			<version>1.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amplitude</groupId>
 			<artifactId>android-sdk</artifactId>
 			<version>2.17.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>3.4.1</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.android</groupId>
@@ -62,21 +68,16 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>1.7.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4-rule</artifactId>
-			<version>1.7.3</version>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito2</artifactId>
+			<version>1.7.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
 			<version>1.7.3</version>
 			<scope>test</scope>
 		</dependency>

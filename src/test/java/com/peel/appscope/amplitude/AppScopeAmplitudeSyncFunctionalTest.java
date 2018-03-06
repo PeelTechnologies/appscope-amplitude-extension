@@ -19,16 +19,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 
 import com.amplitude.api.Amplitude;
+import com.amplitude.api.AmplitudeClient;
 import com.google.gson.Gson;
 import com.peel.appscope.AppScope;
 import com.peel.appscope.TypedKey;
@@ -42,42 +44,46 @@ import android.content.SharedPreferences;
  * @author Inderjeet Singh
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class, SharedPreferences.class })
+@PrepareForTest({ Context.class, SharedPreferences.class, Amplitude.class })
 public class AppScopeAmplitudeSyncFunctionalTest {
 
-    @Rule // Needed to make PowerMockito work
-    public PowerMockRule rule = new PowerMockRule();
-
-    private AmplitudeClientMock amplitudeClient;
+    private AmplitudeClient amplitudeClient;
+    private JSONObject userProperties;
 
     @Before
     public void setUp() throws Exception {
         Context context = AndroidFixtures.createMockContext();
         AppScope.TestAccess.init(context, new Gson());
-        PowerMockito.mockStatic(Amplitude.class);
-        this.amplitudeClient = new AmplitudeClientMock();
-        PowerMockito.when(Amplitude.getInstance()).thenReturn(amplitudeClient);
+        amplitudeClient = Mockito.mock(AmplitudeClient.class);
+        Mockito.doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                userProperties = (JSONObject) args[0]; // Just set userProperties
+                return null;
+            }
+        }).when(amplitudeClient).setUserProperties(Mockito.any(JSONObject.class));
+        AppScope.addListener(new AppScopeAmplitudeSyncListener(amplitudeClient));
     }
 
     @Test
     public void testAmplitudeSync() throws Exception {
         TypedKeyAmplitudeSynced<String> sync = new TypedKeyAmplitudeSynced<>("sync", String.class, false, false);
         AppScope.bind(sync, "test");
-        assertEquals("test", (String) amplitudeClient.getUserProperties().get("sync"));
+        assertEquals("test", userProperties.get("sync"));
 
         // assert that amplitude sync doesn't happen for non-synced properties
         TypedKey<String> nosync = new TypedKey<>("nosync", String.class, false, false);
         AppScope.bind(nosync, "test");
-        assertFalse(amplitudeClient.getUserProperties().has("nosync"));
+        assertFalse(userProperties.has("nosync"));
     }
 
     @Test
     public void testAmplitudeUnsetOnBooleanPropertyRemoval() throws Exception {
         TypedKeyAmplitudeSynced<Boolean> bool = new TypedKeyAmplitudeSynced<>("bool", Boolean.class, false, false);
         AppScope.bind(bool, true);
-        assertTrue((Boolean) amplitudeClient.getUserProperties().get("bool"));
+        assertTrue(userProperties.getBoolean("bool"));
 
         AppScope.remove(bool);
-        assertFalse((Boolean) amplitudeClient.getUserProperties().get("bool"));
+        assertFalse(userProperties.getBoolean("bool"));
     }
 }
