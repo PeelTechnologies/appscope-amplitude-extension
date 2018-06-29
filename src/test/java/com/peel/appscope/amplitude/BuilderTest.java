@@ -50,7 +50,7 @@ public class BuilderTest {
     @Test
     public void testConfigType() {
         TypedKeyAmplitudeSynced<String> key = new TypedKeyAmplitudeSynced.Builder<>("a", String.class)
-                .survivesReset()
+                .surviveReset()
                 .build();
         assertFalse(key.isPersistable());
         assertTrue(key.isCacheableInMemory());

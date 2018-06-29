@@ -17,6 +17,7 @@ package com.peel.appscope.amplitude;
 
 import java.lang.reflect.Type;
 
+import com.google.gson.reflect.TypeToken;
 import com.peel.appscope.AppScope;
 import com.peel.appscope.TypedKey;
 
@@ -29,12 +30,12 @@ public final class TypedKeyAmplitudeSynced<T> extends TypedKey<T> {
 
     public static final class Builder<R> extends TypedKey.Builder<R> {
 
-        public Builder(String name, Type type) {
+        public Builder(String name, TypeToken<R> type) {
             super(name, type);
         }
 
         public Builder(String name, Class<R> clazz) {
-            super(name, (Type) clazz);
+            super(name, clazz);
         }
 
         /**
@@ -42,8 +43,8 @@ public final class TypedKeyAmplitudeSynced<T> extends TypedKey<T> {
          * @return the builder
          */
         @Override
-        public Builder<R> survivesReset() {
-            return (Builder<R>) super.survivesReset();
+        public Builder<R> surviveReset() {
+            return (Builder<R>) super.surviveReset();
         }
 
         /**
